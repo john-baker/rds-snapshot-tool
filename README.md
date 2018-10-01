@@ -34,6 +34,9 @@ Here is a break down of each parameter for the source template:
 * **DestinationAccount** - the account where you want snapshots to be copied to
 * **LogLevel** - The log level you want as output to the Lambda functions. ERROR is usually enough. You can increase to INFO or DEBUG.
 * **RetentionDays** - the amount of days you want your snapshots to be kept. Snapshots created more than **RetentionDays** ago will be automatically deleted (only if they contain a tag with Key: CreatedBy, Value: Snapshot Tool for RDS)
+* **Retention_Yearly** - Enable functionality to retain a single yearly snapshot.
+* **Retention_Month** - Sets the month number for which you wish to retain a yearly snapshot for. Must be an integer eg December would be 12.
+* **Retention_YearsToKeep** - the amount of years a yearly snapsot should be kept for. Must be an integer. E.g. 7.
 * **ShareSnapshots** - Set to TRUE if you are sharing snapshots with a different account. If you set to FALSE, StateMachine, Lambda functions and associated Cloudwatch Alarms related to sharing across accounts will not be created. It is useful if you only want to take backups and manage the retention, but do not need to copy them across accounts or regions.
 * **SourceRegionOverride** - if you are running RDS on a region where Step Functions is not available, this parameter will allow you to override the source region. For example, at the time of this writing, you may be running RDS in Northern California (us-west-1) and would like to copy your snapshots to Montreal (ca-central-1). Neither region supports Step Functions at the time of this writing so deploying this tool there will not work. The solution is to run this template in a region that supports Step Functions (such as North Virginia or Ohio) and set **SourceRegionOverride** to *us-west-1*.
 **IMPORTANT**: deploy to the closest regions for best results.
