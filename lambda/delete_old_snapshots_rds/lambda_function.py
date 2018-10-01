@@ -23,6 +23,9 @@ LOGLEVEL = os.getenv('LOG_LEVEL', 'ERROR').strip()
 PATTERN = os.getenv('PATTERN', 'ALL_INSTANCES')
 RETENTION_DAYS = int(os.getenv('RETENTION_DAYS', '7'))
 TIMESTAMP_FORMAT = '%Y-%m-%d-%H-%M'
+RETENTION_YEARLY = os.getenv('RETENTION_YEARLY', 'NO')
+RETENTION_MONTH = int(os.getenv('RETENTION_MONTH', '12'))
+RETENTION_YEARSTOKEEP = int(os.getenv('RETENTION_YEARSTOKEEP', '7'))
 
 if os.getenv('REGION_OVERRIDE', 'NO') != 'NO':
     REGION = os.getenv('REGION_OVERRIDE').strip()
@@ -46,13 +49,14 @@ def lambda_handler(event, context):
         creation_date = get_timestamp(snapshot, filtered_list)
 
         if creation_date:
+			monthnum = datetime.datetime.strptime(creation_date, "%m")
+			yearnum = datetime.datetime.strptime(datetime.now(), "%Y") - datetime.datetime.strptime(creation_date, "%Y")
             difference = datetime.now() - creation_date
             days_difference = difference.total_seconds() / 3600 / 24
             logger.debug('%s created %s days ago' %
                          (snapshot, days_difference))
 
-            # if we are past RETENTION_DAYS
-            if days_difference > RETENTION_DAYS:
+			if days_difference > RETENTION_DAYS and RETENTION_YEARLY = 'YES' and monthnum !=  RETENTION_MONTH and yearnum > RETENTION_YEARSTOKEEP:
                 # delete it
                 logger.info('Deleting %s' % snapshot)
 
@@ -65,8 +69,22 @@ def lambda_handler(event, context):
                     logger.info('Could not delete %s ' % snapshot)
 
         else: 
-            logger.info('Not deleting %s. Created only %s' % (snapshot, days_difference))
+            	# if we are past RETENTION_DAYS
+				if days_difference > RETENTION_DAYS:
+					# delete it
+					logger.info('Deleting %s' % snapshot)
 
+					try:
+						client.delete_db_snapshot(
+							DBSnapshotIdentifier=snapshot)
+
+					except Exception:
+						pending_delete += 1
+						logger.info('Could not delete %s ' % snapshot)
+
+			else: 
+				logger.info('Not deleting %s. Created only %s' % (snapshot, days_difference))
+	
 
     if pending_delete > 0:
         message = 'Snapshots pending delete: %s' % pending_delete
