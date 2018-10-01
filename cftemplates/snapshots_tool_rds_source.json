@@ -36,6 +36,21 @@
 			"Default": "7",
 			"Description": "Number of days to keep snapshots in retention before deleting them"
 		},
+		"Retention_Yearly": {
+			"Type": "String",
+			"Default": "NO",
+			"Description": "Option to retain a yearly backup."
+		},
+		"Retention_Month": {
+			"Type": "Number",
+			"Default": "12",
+			"Description": "If deciding to keep a yearly backup to set the month which is kept. Must be a number."
+		},
+		"Retention_YearsToKeep": {
+			"Type": "Number",
+			"Default": "7",
+			"Description": "Number of years to keep the yearly snapshots in retention before deleting them."
+		},
 		"LogLevel": {
 			"Type": "String",
 			"Default": "ERROR",
@@ -414,6 +429,15 @@
 					"Variables": {
 						"RETENTION_DAYS": {
 							"Ref": "RetentionDays"
+						},
+						"RETENTION_YEARLY": {
+							"Ref": "Retention_Yearly"
+						},
+						"RETENTION_MONTH": {
+							"Ref": "Retention_Month"
+						},
+						"RETENTION_YEARSTOKEEP": {
+							"Ref": "Retention_YearsToKeep"
 						},
 						"PATTERN": {
 							"Ref": "InstanceNamePattern"
